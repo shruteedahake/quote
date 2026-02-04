@@ -274,3 +274,35 @@ def normalize_lookup_key(key) -> str:
     key = re.sub(r"[^a-zA-Z0-9]", "", key)
 
     return key.lower()
+
+_______&__
+def build_pdf_field_map(abc_data: dict, gw_data: dict) -> dict:
+    today = datetime.today()
+    quote_date = today.strftime("%d/%m/%y")
+    expiry_date = (today + timedelta(days=30)).strftime("%d/%m/%y")
+
+    return {
+        # -------- Broker / Insured (ABC) --------
+        "brokername": safe_get(abc_data, "brokername"),
+        "oragnizationname": safe_get(abc_data, "oragnizationname"),
+        "brokeremail": safe_get(abc_data, "brokeremail"),
+        "namedinsured": safe_get(abc_data, "namedinsured"),
+        "nameandmailingaddress": safe_get(abc_data, "nameandmailingaddress"),
+
+        # -------- Dates --------------------------
+        "quotedate": quote_date,
+        "quoteexpirydate": expiry_date,
+
+        # -------- Stubbed ------------------------
+        "typeofcover": "Commercial Property",
+        "coveragebasis": "Fire & Allied Perils",
+
+        # -------- Coverage Summary (ABC) ---------
+        "effectivedate": safe_get(abc_data, "effectivedate"),
+        "expirationdate": safe_get(abc_data, "expirationdate"),
+        "limitofliabilit": safe_get(abc_data, "limitofliabilit"),
+
+        # -------- Premium Summary (GW) ----------
+        "totalpayablepremium": f"$ {safe_get(gw_data, 'totalpremiumamount')}",
+        "taxes": f"$ {safe_get(gw_data, 'taxesandsurchargesamount')}",
+    }
