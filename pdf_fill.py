@@ -83,3 +83,45 @@ def fill_pdf_form(template_bytes: bytes, extracted_map: dict, meta_map: dict, st
     doc.save(out, deflate=True)
     doc.close()
     return out.getvalue()
+
+
+
+
+---- changes
+
+
+def fill_pdf_form(template_bytes: bytes, field_map: dict) -> bytes:
+    doc = fitz.open(stream=template_bytes, filetype="pdf")
+
+    all_page_tokens = []
+    for page in doc:
+        all_page_tokens.extend(_collect_tokens(page.get_text("text")))
+    all_page_tokens = list(dict.fromkeys(all_page_tokens))
+
+    for page in doc:
+        page_text = page.get_text("text")
+        tokens = _collect_tokens(page_text)
+
+        # Replace {{tokens}}
+        for raw_token in tokens:
+            value = field_map.get(raw_token)
+            if value in (None, ""):
+                continue
+
+            token_variants = [f"{{{{{raw_token}}}}}", f"{{{raw_token}}}"]
+            for tv in token_variants:
+                _replace_token(page, tv, value)
+
+        # Place next to labels
+        for raw_token in tokens:
+            value = field_map.get(raw_token)
+            if value in (None, ""):
+                continue
+
+            label = f"{raw_token.strip()}:"
+            _place_next_to_label(page, label, value)
+
+    out = io.BytesIO()
+    doc.save(out, deflate=True)
+    doc.close()
+    return out.getvalue()
