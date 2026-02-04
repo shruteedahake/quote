@@ -168,3 +168,31 @@ def fill_pdf_form(template_bytes: bytes, field_map: dict) -> bytes:
     doc.save(out, deflate=True)
     doc.close()
     return out.getvalue()
+
+
+--------- change 2
+def fill_pdf_form(template_bytes: bytes, field_map: dict) -> bytes:
+    doc = fitz.open(stream=template_bytes, filetype="pdf")
+
+    for page in doc:
+        page_text = page.get_text("text")
+        print("PAGE TEXT:")
+        print(page_text)
+
+        for pdf_key, value in field_map.items():
+            if value in (None, ""):
+                continue
+
+            # SubDoc.BrokerName -> Broker Name
+            label_text = pdf_key.split(".")[-1]
+            label_text = re.sub(r"([a-z])([A-Z])", r"\1 \2", label_text)
+
+            placed = _place_next_to_label(page, f"{label_text}:", value)
+
+            if not placed:
+                _replace_token(page, pdf_key, value)
+
+    out = io.BytesIO()
+    doc.save(out, deflate=True)
+    doc.close()
+    return out.getvalue()
