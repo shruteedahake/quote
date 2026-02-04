@@ -224,3 +224,33 @@ def build_pdf_field_map(abc_json: dict, gw_json: dict) -> dict:
         "TotalPayablePremium": f"$ {safe_get(gw_json, 'totalPremium.amount')}",
         "Taxes": f"$ {safe_get(gw_json, 'taxesandSurcharges.amount')}",
     }
+
+
+
+----------- vhange 2
+
+def fill_pdf_form(template_bytes: bytes, field_map: dict) -> bytes:
+    doc = fitz.open(stream=template_bytes, filetype="pdf")
+
+    for page in doc:
+        page_text = page.get_text("text")
+        tokens = _collect_tokens(page_text)
+
+        for raw_token in tokens:
+            lookup_key = normalize_lookup_key(raw_token)
+            value = field_map.get(lookup_key)
+
+            if value in (None, ""):
+                continue
+
+            token_variants = [f"{{{{{raw_token}}}}}", f"{{{raw_token}}}"]
+            for tv in token_variants:
+                _replace_token(page, tv, value)
+
+            label = f"{raw_token.strip()}:"
+            _place_next_to_label(page, label, value)
+
+    out = io.BytesIO()
+    doc.save(out, deflate=True)
+    doc.close()
+    return out.getvalue()
