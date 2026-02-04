@@ -196,3 +196,31 @@ def fill_pdf_form(template_bytes: bytes, field_map: dict) -> bytes:
     doc.save(out, deflate=True)
     doc.close()
     return out.getvalue()
+
+
+-0--------------------------
+def build_pdf_field_map(abc_json: dict, gw_json: dict) -> dict:
+    today = datetime.today()
+    quote_date = today.strftime("%d/%m/%y")
+    expiry_date = (today + timedelta(days=30)).strftime("%d/%m/%y")
+
+    return {
+        "SubDoc.BrokerName": safe_get(abc_json, "Broker Name"),
+        "SubDoc.OragnizationName": safe_get(abc_json, "Oragnization Name"),
+        "SubDoc.BrokerEmail": safe_get(abc_json, "Broker Email"),
+        "SubDoc.NamedInsured": safe_get(abc_json, "Named Insured"),
+        "SubDoc.NameandMailingAddress": safe_get(abc_json, "Name and Mailing Address"),
+
+        "QuoteDate": quote_date,
+        "QuoteExpiryDate": expiry_date,
+
+        "TypeOfCover": "Commercial Property",
+        "CoverageBasis": "Fire & Allied Perils",
+
+        "SubDoc.EffectiveDate": safe_get(abc_json, "Effective Date"),
+        "SubDoc.ExpirationDate": safe_get(abc_json, "Expiration Date"),
+        "SubDoc.LimitofLiabilit": safe_get(abc_json, "Limit of Liability"),
+
+        "TotalPayablePremium": f"$ {safe_get(gw_json, 'totalPremium.amount')}",
+        "Taxes": f"$ {safe_get(gw_json, 'taxesandSurcharges.amount')}",
+    }
