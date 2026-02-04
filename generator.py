@@ -123,4 +123,16 @@ Risk Location Address: SubDoc.NameandMailingAddress The values from the input ur
 Quote Date: current date dd/mm/yy (Should have the logic on the code itself)
 Quote Expiry Date: current date + 30days (Should have the logic on the code itself)
 
+2.Coverage Summary
+ 
+Type of Cover: Commercial Property (Stubbed)
+Coverage Basis: Fire & Allied Perils (Stubbed)
+Policy Period From: SubDoc.EffectiveDate The values from the input url should be fetched and fill in the place of "SubDoc.EffectiveDate" (Should be fetched from the 2 input blob url)
+Policy Period To: SubDoc.ExpirationDate The values from the input url should be fetched and fill in the place of "SubDoc.ExpirationDate" (Should be fetched from the 2 input blob url)
+Total Sum Insured: SubDoc.LimitofLiabilit The values from the input url should be fetched and fill in the place of "SubDoc.LimitofLiabilit" (Should be fetched from the 2 input blob url)
+ 
+3.Premium Summary 
+Total Payable Premium: $  GWResponse.totalPremium.amount The values from the input url should be fetched and fill in the place of"$ GWResponse.totalPremium.amount" (Should be fetched from the 2 input blob url)
+Taxes: $ GWResponse.taxesandSurcharges.amount The values from the input url should be fetched and fill in the place of"$ GWResponse.taxesandSurcharges.amoun" (Should be fetched from the 2 input blob url).
+
 Accordingly make changes in the code and give me the complete new code.
