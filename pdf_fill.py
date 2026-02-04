@@ -254,3 +254,23 @@ def fill_pdf_form(template_bytes: bytes, field_map: dict) -> bytes:
     doc.save(out, deflate=True)
     doc.close()
     return out.getvalue()
+
+
+
+_______
+
+def normalize_lookup_key(key) -> str:
+    if not isinstance(key, str):
+        return ""
+
+    key = key.strip()
+    if not key:
+        return ""
+
+    # Remove known prefixes
+    key = key.replace("SubDoc.", "").replace("GWResponse.", "")
+
+    # Remove everything except letters and numbers
+    key = re.sub(r"[^a-zA-Z0-9]", "", key)
+
+    return key.lower()
